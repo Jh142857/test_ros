@@ -76,9 +76,15 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 
 	using LogitType = decltype(DATA_TYPE::occupancy);
 
+	// TODO: Why do I need this here instead of using it from Base?
 	using Path = std::array<LEAF_NODE*, Base::MAX_DEPTH_LEVELS>;
 
  public:
+	//
+	// Tree type
+	//
+
+	// virtual std::string getTreeType() const noexcept override { return "occupancy_map"; }
 
 	//
 	// "Normal" iterators
@@ -479,38 +485,6 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 		return isOccupied(current_code) ? current_code : std::nullopt;
 	}
 
-    bool isCollisionFree(Point3 origin, Point3 end, bool ignore_unknown = false, unsigned int depth = 0) const {
-//     ******* fast cast ray *******
-        if (!Base::moveLineInside(origin, end)) {
-            // Line fully outside of octree bounds
-            return false;
-        }
-
-        Point3 direction = end - origin;
-        double distance = direction.norm();
-        direction /= distance;
-        Key current_key;
-        Key end_key;
-        std::array<int, 3> step;
-        Point3 t_delta;
-        Point3 t_max;
-        Base::computeRayInit(origin, end, direction, current_key, end_key, step, t_delta,
-                             t_max, depth);
-        // Increment
-        Code current_code = Base::toCode(current_key);
-        while (current_key != end_key && t_max.min() <= distance) {
-            if (isOccupied(current_code)) {
-                return false;
-            }
-            if (!ignore_unknown && isUnknown(current_code)) {
-                return false;
-            }
-            Base::computeRayTakeStep(current_key, step, t_delta, t_max);
-            current_code = Base::toCode(current_key);
-        }
-        return true;
-    }
-
 	//
 	// Set value volume
 	//
@@ -771,6 +745,10 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 
 	void setOccupiedFreeThres(double new_occupied_thres, double new_free_thres)
 	{
+		// TODO: Should add a warning that these are very computational expensive to
+		// call since the whole tree has to be updated
+
+		// FIXME: Implement better
 		std::stringstream s(std::ios_base::in | std::ios_base::out | std::ios_base::binary);
 		Base::write(s);
 
@@ -965,11 +943,13 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 	// Checking if contains
 	//
 
+	// TODO: Should this exist?
 	bool containsOccupied(LEAF_NODE const& node, DepthType depth) const
 	{
 		return isOccupied(node);
 	}
 
+	// TODO: Should this exist?
 	bool containsUnknown(LEAF_NODE const& node, DepthType depth) const
 	{
 		if (0 == depth) {
@@ -978,6 +958,7 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 		return containsUnknown(static_cast<INNER_NODE const&>(node));
 	}
 
+	// TODO: Should this exist?
 	bool containsFree(LEAF_NODE const& node, DepthType depth) const
 	{
 		if (0 == depth) {
@@ -1127,6 +1108,7 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 						}
 					}
 				} else {
+					// TODO: Careful here
 					if (updateAllChildren(code.getChild(i), child, depth - 1, update)) {
 						changed = true;
 					}
@@ -1259,6 +1241,7 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 			} else if constexpr (std::is_base_of_v<point_type, Point3>) {
 				end = point;
 			} else {
+				// TODO: Error
 			}
 
 			// Move origin and end inside map
@@ -1300,6 +1283,9 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 			return;
 		}
 
+		// if (0 == depth) {
+		// 	Base::computeRayTakeStep(current_key, step, t_delta, t_max);
+		// }
 		unsigned int already_update_in_row = 0;
 		do {
 			if (indices.try_emplace(Base::toCode(current_key), value).second) {
@@ -1331,9 +1317,14 @@ class OccupancyMapBase : public Octree<DATA_TYPE, OccupancyMapInnerNode<DATA_TYP
 		int current_step = 0;
 		double current_distance = distance;
 		double dist_per_step = distance / num_steps;
-
+		// if (0 == depth) {
+		// 	current += step;
+		// 	current_step = 1;
+		// }
 		unsigned int already_update_in_row = 0;
 		for (; current_step <= num_steps; ++current_step) {
+			// if (indices.try_emplace(Base::toCode(current, depth), value / (current_distance *
+			// current_distance)).second) {
 			if (indices.try_emplace(Base::toCode(current, depth), value).second) {
 				already_update_in_row = 0;
 			} else {

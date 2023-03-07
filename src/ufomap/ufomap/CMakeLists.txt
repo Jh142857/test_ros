@@ -145,11 +145,6 @@ endif(UFOMAP_BMI2)
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HEADER_LIST})
 
-catkin_package(
-		INCLUDE_DIRS include
-		LIBRARIES Map UFO::Map ${catkin_LIBRARIES}
-)
-
 install(TARGETS Map 
 	EXPORT ufomapTargets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -601,12 +601,12 @@ class CodeMap
 
 		const std::pair<Code, T>& operator*() const
 		{
-			return *inner_iter_;  // inflate_map_->data_[outer_index_][inner_index_];
+			return *inner_iter_;  // map_->data_[outer_index_][inner_index_];
 		}
 
 		std::pair<Code, T> operator*()
 		{
-			return *inner_iter_;  // inflate_map_->data_[outer_index_][inner_index_];
+			return *inner_iter_;  // map_->data_[outer_index_][inner_index_];
 		}
 
 		// Postfix increment

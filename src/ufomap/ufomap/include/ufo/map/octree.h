@@ -244,7 +244,7 @@ class Octree
 	// Pruning
 	//
 
-	bool prune() { return pruneNode(getRootCode()); }
+	bool prune() { return prune(getRootCode()); }
 
 	bool pruneNode(Code const& code)
 	{
@@ -257,8 +257,7 @@ class Octree
 		    !isNodeCollapsible(static_cast<INNER_NODE const&>(*node), code.getDepth())) {
 			return false;
 		}
-        deleteChildren(static_cast<INNER_NODE&>(*node), code.getDepth(), true);
-		return true;
+		return deleteChildren(static_cast<INNER_NODE&>(node), code.getDepth(), true);
 	}
 
 	//

@@ -11,15 +11,13 @@
 
   <url type="website">https://github.com/danielduberg/ufomap</url>
 
-<!--  <buildtool_depend>cmake</buildtool_depend>-->
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
   <depend>lz4</depend>
   <depend>tbb</depend>
   
   <doc_depend>doxygen</doc_depend>
 
   <export>
-<!--    <build_type>cmake</build_type>-->
-<!--    <build_type>catkin</build_type>-->
+    <build_type>cmake</build_type>
   </export>
 </package>
